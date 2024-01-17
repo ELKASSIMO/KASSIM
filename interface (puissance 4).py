@@ -12,7 +12,6 @@ class jeuGUI:
 
     def __init__(self, jeu):
         self._jeu = jeu
-        self._pion = 0
         self.__root = Tk()
         self.__root.title('LE JEU QUI REND FOU')
 
@@ -26,6 +25,10 @@ class jeuGUI:
         self.__frame2.grid(row=0, column=1)
         self.__frame2.config(relief=RIDGE, borderwidth=3)
 
+        self.__frame3 = Frame(self.__root)
+        self.__frame3.grid(row=1, column=1)
+        self.__frame3.config(relief=RIDGE, borderwidth=3)
+
 
         # gérer la hauteur des cases
         self.__canvas = Canvas(self.__frame1)
@@ -33,6 +36,9 @@ class jeuGUI:
                              width=self._jeu.getSize() * 65 + 1, highlightthickness=0, bd=0)
         self.__canvas.place(x=100, y=80)
         self.__canvas.bind('<Button-1>', self.clickCell)
+
+        self.__buttonStart = ttk.Button(self.__frame3, text='reStart', command=self.start)
+        self.__buttonStart.pack()
 
 
         self.__playerTurnText = StringVar()
@@ -44,7 +50,7 @@ class jeuGUI:
 
     #Les joueurs
     def nextPlayer(self):
-        self.__jeu.nextPlayer()
+        self._jeu.nextPlayer()
 
 
 
@@ -70,14 +76,23 @@ class jeuGUI:
         print(self._jeu.getSize())
         for x in range(self._jeu.getSize()):
             for y in range(self._jeu.getSize()):
-                self.__canvas.create_rectangle(x * 65, y * 65, (1 + x) * 65, (1 + y) * 65,
+                pions = self._jeu.getColor(x, y)
+                color = 'black'
+                if pions.getState() == 1:
+                    color = 'red'
+                elif pions.getState() == 2:
+                    color = 'yellow'
+
+                self.__canvas.create_rectangle(y * 65, x * 65, (1 + y ) * 65, (1 + x) * 65,
                                                fill='black', outline="blue")
-                self.__canvas.create_oval(x * 30 + circle_margin, y * 30 + circle_margin, (x + 1) * 30 - circle_margin,
-                                          (y + 1) * 30 - circle_margin, fill=self._pion.getColor(i))
+                self.__canvas.create_oval(y * 65 + circle_margin, x * 65 + circle_margin,
+                                          (y + 1) * 65 - circle_margin, (x + 1) * 65 - circle_margin,
+                                          fill=color)
 
     # configuration du click pour poser un pion
     def clickCell(self, event):
         x = event.x // 65
+        y = event.y // 65
         if self._jeu.possible(x):
             self._jeu.put(x)
             self._jeu.nextPlayer()
@@ -85,13 +100,9 @@ class jeuGUI:
 
 
     #message fin de jeu
-    def endOfGame(self):
-        tkinter.messagebox.showinfo(message='Player ' + str(self._jeu.getPlayer() + 1) + ' a Gagné !')
-
-
 
 
 size = 12
-jeux = main.jeu(size, 2)
+jeux = main.jeu(size, 1)
 a = jeuGUI(jeux)
 a.start()
