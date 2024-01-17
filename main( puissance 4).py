@@ -1,50 +1,31 @@
 class pion:
-
     def __init__(self, state=0):
         self.__state = state
 
-
     def getState(self):
         return self.__state
-
     def setState(self, state):
         self.__state = state
-
-    def getVisualIcon(self):
-        if self.__state == 0:
-            return 'O'
-        elif self.__state == 1:
-            return 'X'
-        else:
-            return '?'
-
-    def getColor(self, i):
-        if self.__state[i] == 0:
-            return 'black'
-        elif self.__state[i] == 1:
-            return 'red'
-        elif self.__state[i] == 2:
-            return 'yellow'
 
 
 
 class jeu:
     def __init__(self, n, player):
         self.__n = n
-        self.__player = 1
+        self.__player = player
         self.__list = self.generate_plateau()
         self.__pions_placed = [[-1] * n for _ in range(n)]  # Example: -1 for empty, 0 for player 1, 1 for player 2
+    def getColor(self, x, y):
+        return self.__list[x][y]
 
 
     #Obtenir la taille du plateu
     def getSize(self):
         return self.__n
 
-
     #Tous ce qui concerne les joueurs
     def getPlayer(self):
         return self.__player
-
     def nextPlayer(self):
         self.__player = (self.__player + 1) % 2
 
@@ -56,15 +37,14 @@ class jeu:
             return self.__list[0][column].getState() == 0
         else:
             return False
-
     def put(self, column):
         row = self.find_empty_row(column)
         if row != -1:
-            self.__list[row][column].setState(self.__player)
-            self.__pions_placed[row][column] = self.__player
+            print("ligne", row, "colonne:", column)
+            self.__list[row][column].setState(self.__player+1)
+            self.__pions_placed[row][column] = self.__player+1
         else:
-            pass
-
+            print("colonne est pleine")
     def find_empty_row(self, column):
         # Parcourez les lignes de bas en haut pour trouver la première ligne vide
         for row in range(self.__n - 1, -1, -1):
@@ -73,24 +53,20 @@ class jeu:
         # La colonne est pleine
         return -1
 
-
     def again(self):
         for i in range(self.__n):
             if self.__list[i] == 0:
                 return True
         return False
 
-
     #generer le plateau
     def generate_plateau(self):
         plateau = [[pion(0) for _ in range(self.__n)] for _ in range(self.__n)]
         return plateau
-
     def afficher_plateau(self, plateau):
         for line in plateau:
             print(" | ".join(line))
             print("_" * 35)
-
     def display(self):
         for line in range(self.__n):
             for column in range(self.__n):
